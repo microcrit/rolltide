@@ -120,17 +120,14 @@ def _generate_common_build_files(modules, outdir='out', target='linux'):
         if not t:
             return 'void'
         t = str(t)
-        # handle mutable reference syntax from RollTide '&mut Type'
-        if t.startswith('&mut '):
-            base = t[len('&mut '):]
-            # map to pointer type
+        if t.startswith('mut '):
+            base = t[len('mut '):]
             return map_type(base) + '*'
         if t.startswith('unsigned:'):
             base = t[len('unsigned:'):]
             if base == 'int':
                 return 'unsigned int'
             return f'unsigned {base}'
-        # Numeric aliases
         if t in ('int', 'i32'):
             return 'int32_t'
         if t in ('i16', 'i8'):
@@ -237,7 +234,6 @@ def _generate_common_build_files(modules, outdir='out', target='linux'):
                     fn_ident = header_info.get('ident') or d.get('name')
                     if not header_info.get('ident') and d.get('owner'):
                         fn_ident = f"{d.get('owner')}_{fn_ident}"
-                    # if ident contains namespace qualifiers like pros::delay, emit wrapped namespace prototype
                     if '::' in fn_ident:
                         ns, ident_name = fn_ident.rsplit('::', 1)
                         hh.write(f'namespace {ns} {{ {ret} {ident_name}({", ".join(args)}); }}\n')
