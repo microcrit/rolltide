@@ -1,10 +1,10 @@
 # Rolltide
 
-Functional language compiler prototype for embedded systems that require repeatable tasks. Particularly designed for robotics applications.
+Functional language compiler prototype for embedded systems that require repeatable tasks. Particularly designed for robotics applications even though I am no longer involved in robotics. Oh well.
 
 ## How to Use
 
-Don't look into it too closely. Give up.   
+Don't look into it too closely.   
 
 ```
 struct PID
