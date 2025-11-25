@@ -1,0 +1,139 @@
+# allie's material ui natives
+
+c:struct controller_id_e_t
+  E_CONTROLLER_MASTER: i32 = 0
+  E_CONTROLLER_PARTNER: i32 = 1
+
+c:struct controller_analog_e_t
+  E_CONTROLLER_ANALOG_LEFT_X: i32 = 0
+  E_CONTROLLER_ANALOG_LEFT_Y: i32 = 1
+  E_CONTROLLER_ANALOG_RIGHT_X: i32 = 2
+  E_CONTROLLER_ANALOG_RIGHT_Y: i32 = 3
+
+c:struct controller_digital_e_t
+  E_CONTROLLER_DIGITAL_L1: i32 = 6
+  E_CONTROLLER_DIGITAL_L2: i32 = 7
+  E_CONTROLLER_DIGITAL_R1: i32 = 8
+  E_CONTROLLER_DIGITAL_R2: i32 = 9
+  E_CONTROLLER_DIGITAL_UP: i32 = 10
+  E_CONTROLLER_DIGITAL_DOWN: i32 = 11
+  E_CONTROLLER_DIGITAL_LEFT: i32 = 12
+  E_CONTROLLER_DIGITAL_RIGHT: i32 = 13
+  E_CONTROLLER_DIGITAL_X: i32 = 14
+  E_CONTROLLER_DIGITAL_B: i32 = 15
+  E_CONTROLLER_DIGITAL_Y: i32 = 16
+  E_CONTROLLER_DIGITAL_A: i32 = 17
+
+controller_clear [ id: controller_id_e_t ]
+controller_get_analog [ id: controller_id_e_t, axis: controller_analog_e_t ] -> i32
+controller_get_digital [ id: controller_id_e_t, button: controller_digital_e_t ] -> bool
+
+struct Controller
+    id: controller_id_e_t
+
+    signals_analog: mut map[(function() -> void, bool), vec[signal/i32]]
+    signals_digital: mut map[(function() -> void, bool), vec[signal/bool]]
+
+into Controller
+    def new [id: controller_id_e_t] =
+        Controller with
+            id
+
+    def new_self() =
+        Controller.new controller_id_e_t/E_CONTROLLER_MASTER
+
+    def new_partner() =
+        Controller.new controller_id_e_t/E_CONTROLLER_PARTNER
+
+    def clear [self: Self] =
+        controller_clear self.id
+
+    def get_analog [self: Self, axis: controller_analog_e_t] -> i32 =
+        controller_get_analog self.id, axis
+
+    def get_digital [self: Self, button: controller_digital_e_t] -> bool =
+        controller_get_digital self.id, button
+    
+    def on_analog_down [self: Self, cb: function() -> void, axis: controller_analog_e_t] -> signal/i32 =
+        sig = signal/i32 0
+        self.signals_analog.insert ((cb, false), vec[signal/i32] of sig)
+        sig
+    
+    def on_digital_down [self: Self, cb: function() -> void, button: controller_digital_e_t] -> signal/bool =
+        sig = signal/bool false
+        self.signals_digital.insert ((cb, false), vec[signal/bool] of sig)
+        sig
+
+    def update_signals [self: Self] =
+        loop
+            self.signals_analog.map [(callback, a)] =
+                match a?
+                    true ->
+                        if self.get_analog callback.0 as i32 != 0
+                            for sig in self.signals_analog[callback]
+                                sig.value = self.get_analog callback.0 as i32
+                            match callback.1?
+                                false ->
+                                    callback.0()
+                                    callback.1 = true
+                        else
+                            callback.1 = false
+            self.signals_digital.map [(callback, a)] =
+                match a?
+                    true ->
+                        if self.get_digital callback.0 as bool
+                            for sig in self.signals_digital[callback]
+                                sig.value = true
+                            match callback.1?
+                                false ->
+                                    callback.0()
+                                    callback.1 = true
+                        else
+                            for sig in self.signals_digital[callback]
+                                sig.value = false
+                            callback.1 = false
+            delay 20
+
+screen_set_pen [color: const uint32_t]
+screen_set_eraser [color: const uint32_t]
+screen_erase []
+screen_scroll [start_line: const int16_t, end_line: const int16_t]
+screen_draw_pixel [x: const int16_t, y: const int16_t]
+screen_draw_line [x0: const int16_t, y0: const int16_t, x1: const int16_t, y1: const int16_t]
+screen_draw_rectangle [x: const int16_t, y: const int16_t, width: const int16_t, height: const int16_t]
+screen_draw_circle [x: const int16_t, y: const int16_t, radius: const int16_t]
+screen_draw_text [x: const int16_t, y: const int16_t, text: const charptr]
+
+into Controller fulfills Default
+    def default() =
+        Controller.new_self()
+
+struct Screen
+
+into Screen
+    def set_pen [color: const uint32_t] =
+        screen_set_pen color
+
+    def set_eraser [color: const uint32_t] =
+        screen_set_eraser color
+
+    def erase [] =
+        screen_erase()
+
+    def scroll [start_line: const int16_t, end_line: const int16_t] =
+        screen_scroll start_line, end_line
+
+    def draw_pixel [x: const int16_t, y: const int16_t] =
+        screen_draw_pixel x, y
+
+    def draw_line [x0: const int16_t, y0: const int16_t, x1: const int16_t, y1: const int16_t] =
+        screen_draw_line x0, y0, x1, y1
+
+    def draw_rectangle [x: const int16_t, y: const int16_t, width: const int16_t, height: const int16_t] =
+        screen_draw_rectangle x, y, width, height
+
+    def draw_circle [x: const int16_t, y: const int16_t, radius: const int16_t] =
+        screen_draw_circle x, y, radius
+
+    def draw_text [x: const int16_t, y: const int16_t, text: const charptr] =
+        screen_draw_text x, y, text

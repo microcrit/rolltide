@@ -1,0 +1,25 @@
+include <rt/pros>
+
+@pros.competition
+def competition_initialize []:
+    # This function is called once when the competition starts
+    # You can put any initialization code here
+    ()
+
+@pros.autonomous
+def autonomous []:
+    # This function is called during the autonomous period
+    # Add your autonomous code here
+    ()
+
+@pros.opcontrol
+def opcontrol []:
+    # This function is called during the operator control period
+    # Add your operator control code here
+    ()
+
+@pros.main
+def initialize []:
+    # This function is called when the robot is powered on
+    # You can put any startup code here
+    ()

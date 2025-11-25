@@ -1,0 +1,59 @@
+@c.ensure_includes "main.h"
+
+struct Motor
+	id: i32
+
+motor_create [port: i32] -> i32
+
+motor_set_velocity [motor: i32, velocity: i32]
+
+motor_move_voltage [motor: i32, voltage: i32]
+
+motor_get_position [motor: i32] -> i32
+
+motor_set_brake_mode [motor: i32, mode: i32]
+
+motor_tare_position [motor: i32]
+
+motor_move_absolute [motor: i32, position: i32, velocity: i32]
+
+motor_move_relative [motor: i32, position: i32, velocity: i32]
+
+motor_stop [motor: i32]
+
+struct Motor fulfills Show
+  def fmt [self: Motor, f: &mut Formatter] =
+    f.write_str "Motor"
+    f.write_str ("(ID: {})".format self.id)
+
+into Motor
+    def new [port: i32] =
+        Motor with
+        id = motor_create port
+    
+    def set_velocity [self: Motor, velocity: i32] =
+        motor_set_velocity self.id, velocity
+    
+    def move_voltage [self: Motor, voltage: i32] =
+        motor_move_voltage self.id, voltage
+    
+    def position [self: Motor] -> i32 =
+        motor_get_position self.id
+    
+    def set_brake_mode [self: Motor, mode: i32] =
+        motor_set_brake_mode self.id, mode
+    
+    def tare_position [self: Motor] =
+        motor_tare_position self.id
+    
+    def move_absolute [self: Motor, position: i32, velocity: i32] =
+        motor_move_absolute self.id, position, velocity
+    
+    def move_relative [self: Motor, position: i32, velocity: i32] =
+        motor_move_relative self.id, position, velocity
+
+    def get_position [self: Motor] -> i32 =
+        motor_get_position self.id
+    
+    def stop [self: Motor] =
+        motor_stop self.id

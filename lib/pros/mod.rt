@@ -1,0 +1,27 @@
+include motor
+include rt
+
+macro @pros.competition [function() -> void]
+    @header.ret "void"
+    @header.ident "competition_initialize"
+    @header.args []
+
+macro @pros.autonomous [function() -> void]
+    @header.ret "void"
+    @header.ident "autonomous"
+    @header.args []
+
+macro @pros.opcontrol [function() -> void]
+    @header.ret "void"
+    @header.ident "opcontrol"
+    @header.args []
+
+macro @pros.main [function() -> void]
+    @header.ret "void"
+    @header.ident "initialize"
+    @header.args []
+    
+macro @pros.disabled [function() -> void]
+    @header.ret "void"
+    @header.ident "disabled"
+    @header.args []

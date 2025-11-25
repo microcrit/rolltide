@@ -1,0 +1,28 @@
+struct IMU
+    id: i32
+
+imu_create [port: i32] -> i32
+imu_get_rotation [imu: i32] -> f32
+imu_reset [imu: i32]
+
+into IMU
+    def new [port: i32] =
+        IMU with
+        id = imu_create port
+    
+    def get_rotation [self: IMU] -> f32 =
+        imu_get_rotation self.id
+
+    def with_pid [self: IMU, pid: PID, target_angle: f32] -> i32 =
+        k_p = 1.0
+        k_i = 0.0
+        k_d = 0.1
+        current_angle = self.get_rotation()
+        error = target_angle - current_angle
+        pid.p = (k_p * 100.0) as i32
+        pid.i = (k_i * 100.0) as i32
+        pid.d = (k_d * 100.0) as i32
+        pid.update(signal/f32 target_angle, signal/f32 current_angle, signal/f32 0.02)
+    
+    def reset [self: IMU] =
+        imu_reset self.id
