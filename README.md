@@ -51,7 +51,7 @@ into PID fulfills Default
     PID.new 1, 0, 0
 
 into PID fulfills Show
-  def fmt [self: PID, f: &mut Formatter] =
+  def fmt [self: PID, f: mut Formatter] =
     f.write_str "PID Controller"
     f.write_str ("(P: {}, I: {}, D: {})".format self.p, self.i, self.d)
 ```

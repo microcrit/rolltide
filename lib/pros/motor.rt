@@ -22,7 +22,7 @@ motor_move_relative [motor: i32, position: i32, velocity: i32]
 motor_stop [motor: i32]
 
 struct Motor fulfills Show
-  def fmt [self: Motor, f: &mut Formatter] =
+  def fmt [self: Motor, f: mut Formatter] =
     f.write_str "Motor"
     f.write_str ("(ID: {})".format self.id)
 
